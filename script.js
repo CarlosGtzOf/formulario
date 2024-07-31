@@ -30,17 +30,18 @@ function sendFormData(data) {
             messageElement.textContent = '¡Gracias por tu respuesta!';
             messageElement.className = 'success';
             form.reset();
-            document.getElementById('char-count').textContent = '0 / 46'; // Resetea el contador
+            document.getElementById('char-count').textContent = '0 / 46';
         } else {
             messageElement.textContent = 'Hubo un error al procesar la respuesta. Por favor, intenta de nuevo.';
             messageElement.className = 'error';
+            console.error('Error del servidor:', response);
         }
         document.body.removeChild(script);
         delete window[callback];
     };
 
-    script.onerror = function() {
-        console.error('Error al cargar el script');
+    script.onerror = function(error) {
+        console.error('Error al cargar el script:', error);
         const messageElement = document.getElementById('response-message');
         messageElement.textContent = 'Hubo un error al enviar la respuesta. Por favor, intenta de nuevo.';
         messageElement.className = 'error';
