@@ -1,46 +1,7 @@
-/*const form = document.getElementById('weddingForm');
-const SCRIPT_URL = '';
-
-form.addEventListener('submit', e => {
-    e.preventDefault();
-    
-    const formData = new FormData(form);
-    const data = Object.fromEntries(formData);
-
-    fetch(SCRIPT_URL, {
-        method: 'POST',
-        body: JSON.stringify(data),
-        mode: 'cors'  // Añadido para manejar posibles problemas de CORS
-    })
-    .then(response => {
-        console.log('Response status:', response.status);
-        return response.text();
-    })
-    .then(data => {
-        console.log('Response data:', data);
-        try {
-            const result = JSON.parse(data);
-            if (result.status === "success") {
-                alert('¡Gracias por tu respuesta!');
-                form.reset();
-            } else {
-                throw new Error(result.message || 'Error desconocido');
-            }
-        } catch (error) {
-            console.error('Error parsing response:', error);
-            alert('Hubo un error al procesar la respuesta. Por favor, intenta de nuevo.');
-        }
-    })
-    .catch(error => {
-        console.error('Fetch error:', error);
-        alert('Hubo un error al enviar tu respuesta. Por favor, intenta de nuevo.');
-    });
-});*/
-
 const form = document.getElementById('weddingForm');
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzKO3TEuyD2eTCHsf5_WSqM9GJt9yQ67R6mMLGYprVsOiJIyJY1WVKfX8nV2KoXFah-Rw/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxa4ssRgKUaUnRdQzrPEaBIPlJD-MJDbcT7rL-tDrPXaigKwzn7F800XxhigxKWQBSiJw/exec'; // Elimina el espacio al final de la URL
 
-// Añade esta función para el contador de caracteres
+// Función para configurar el contador de caracteres
 function setupCharacterCount() {
     const messageTextarea = document.getElementById('message');
     const charCount = document.getElementById('char-count');
@@ -57,41 +18,57 @@ function setupCharacterCount() {
     });
 }
 
-// Llama a esta función cuando el DOM esté listo
-document.addEventListener('DOMContentLoaded', setupCharacterCount);
+// Función para enviar los datos del formulario
+function sendFormData(data) {
+    const script = document.createElement('script');
+    const callback = 'callback_' + Math.random().toString(36).substr(2, 5);
 
-form.addEventListener('submit', e => {
+    window[callback] = function(response) {
+        console.log('Respuesta del servidor:', response);
+        const messageElement = document.getElementById('response-message');
+        if (response && response.status === "success") {
+            messageElement.textContent = '¡Gracias por tu respuesta!';
+            messageElement.className = 'success';
+            form.reset();
+            document.getElementById('char-count').textContent = '0 / 46'; // Resetea el contador
+        } else {
+            messageElement.textContent = 'Hubo un error al procesar la respuesta. Por favor, intenta de nuevo.';
+            messageElement.className = 'error';
+        }
+        document.body.removeChild(script);
+        delete window[callback];
+    };
+
+    script.onerror = function() {
+        console.error('Error al cargar el script');
+        const messageElement = document.getElementById('response-message');
+        messageElement.textContent = 'Hubo un error al enviar la respuesta. Por favor, intenta de nuevo.';
+        messageElement.className = 'error';
+        document.body.removeChild(script);
+        delete window[callback];
+    };
+
+    const queryString = Object.keys(data)
+        .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(data[key])}`)
+        .join('&');
+
+    script.src = `${SCRIPT_URL}?callback=${callback}&${queryString}`;
+    document.body.appendChild(script);
+}
+
+
+// Event listener para el envío del formulario
+form.addEventListener('submit', function(e) {
     e.preventDefault();
     
     const formData = new FormData(form);
     const data = Object.fromEntries(formData);
 
-    console.log('Datos del formulario:', data);
+    console.log('Datos a enviar:', data);
     console.log('adultOnly value:', data.adultOnly);
 
-    // Asegúrate de que el mensaje no exceda los 46 caracteres
-    if (data.message && data.message.length > 46) {
-        data.message = data.message.substring(0, 46);
-    }
-
-    const dataToSend = JSON.stringify(data);
-    console.log('Datos a enviar (JSON):', dataToSend);
-
-    fetch(SCRIPT_URL, {
-        method: 'POST',
-        mode: 'no-cors', // Añade esta línea
-        body: JSON.stringify(data)
-    })
-    .then(response => {
-        console.log('Response status:', response.status);
-        return response.text();
-    })
-    .then(responseData => {
-        console.log('Respuesta del servidor:', responseData);
-        // ... resto del código ...
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('Hubo un error al enviar tu respuesta. Por favor, intenta de nuevo.');
-    });
+    sendFormData(data);
 });
+
+// Llamar a setupCharacterCount cuando el DOM esté listo
+document.addEventListener('DOMContentLoaded', setupCharacterCount);
