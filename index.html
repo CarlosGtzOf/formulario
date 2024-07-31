@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario de Invitados - Nuestra Boda</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Confirmación de Asistencia</h1>
+        <form id="weddingForm">
+            <input type="text" id="name" name="name" placeholder="Nombre completo" required>
+            <input type="email" id="email" name="email" placeholder="Correo electrónico" required>
+            <select id="attendance" name="attendance" required>
+                <option value="">¿Asistirás?</option>
+                <option value="Sí">Sí, asistiré</option>
+                <option value="No">No podré asistir</option>
+            </select>
+            <input type="number" id="guests" name="guests" placeholder="Número de acompañantes" min="0" max="5">
+            
+            <!-- Nuevo selector para la política de "solo adultos" -->
+            <label for="adultOnly">Adoramos a sus hijos, pero creemos que necesitan una noche libre. Solo adultos, por favor.</label>
+            <select id="adultOnly" name="adultOnly" required>
+                <option value="">Seleccione una opción</option>
+                <option value="De acuerdo">Estoy de acuerdo</option>
+                <option value="En desacuerdo">Estoy en desacuerdo</option>
+            </select>
+    
+            <div class="message-container">
+                <textarea id="message" name="message" placeholder="Mensaje para los novios (opcional)" maxlength="46"></textarea>
+                <div id="char-count">0 / 46</div>
+            </div>
+            <button type="submit">Enviar</button>
+        </form>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
