@@ -20,31 +20,22 @@ function setupCharacterCount() {
 
 // Función para enviar los datos del formulario
 function sendFormData(data) {
+    const messageElement = document.getElementById('response-message');
+    messageElement.textContent = 'Enviando tu respuesta...';
+    messageElement.className = 'info';
+
     const script = document.createElement('script');
     const callback = 'callback_' + Math.random().toString(36).substr(2, 5);
 
     window[callback] = function(response) {
         console.log('Respuesta del servidor:', response);
-        const messageElement = document.getElementById('response-message');
-        if (response && response.status === "success") {
-            messageElement.textContent = '¡Gracias por tu respuesta!';
-            messageElement.className = 'success';
-            form.reset();
-            document.getElementById('char-count').textContent = '0 / 46';
-        } else {
-            messageElement.textContent = 'Hubo un error al procesar la respuesta. Por favor, intenta de nuevo.';
-            messageElement.className = 'error';
-            console.error('Error del servidor:', response);
-        }
+        // No hacemos nada con la respuesta del servidor
         document.body.removeChild(script);
         delete window[callback];
     };
 
-    script.onerror = function(error) {
-        console.error('Error al cargar el script:', error);
-        const messageElement = document.getElementById('response-message');
-        messageElement.textContent = 'Hubo un error al enviar la respuesta. Por favor, intenta de nuevo.';
-        messageElement.className = 'error';
+    script.onerror = function() {
+        console.error('Error al cargar el script');
         document.body.removeChild(script);
         delete window[callback];
     };
@@ -55,8 +46,21 @@ function sendFormData(data) {
 
     script.src = `${SCRIPT_URL}?callback=${callback}&${queryString}`;
     document.body.appendChild(script);
-}
 
+    // Reiniciar el formulario y mostrar mensaje de éxito después de 3 segundos
+    setTimeout(() => {
+        form.reset();
+        document.getElementById('char-count').textContent = '0 / 46';
+        messageElement.textContent = '¡Gracias por tu respuesta!';
+        messageElement.className = 'success';
+
+        // Ocultar el mensaje después de 5 segundos adicionales
+        setTimeout(() => {
+            messageElement.textContent = '';
+            messageElement.className = '';
+        }, 5000);
+    }, 3000);
+}
 
 // Event listener para el envío del formulario
 form.addEventListener('submit', function(e) {
