@@ -29,15 +29,32 @@ function sendFormData(data) {
 
     window[callback] = function(response) {
         console.log('Respuesta del servidor:', response);
-        // No hacemos nada con la respuesta del servidor
         document.body.removeChild(script);
         delete window[callback];
+
+        if (response && response.status === "success") {
+            form.reset();
+            document.getElementById('char-count').textContent = '0 / 46';
+            messageElement.textContent = '¡Gracias por tu respuesta!';
+            messageElement.className = 'success';
+
+            // Ocultar el mensaje después de 5 segundos
+            setTimeout(() => {
+                messageElement.textContent = '';
+                messageElement.className = '';
+            }, 5000);
+        } else {
+            messageElement.textContent = 'Hubo un error al procesar la respuesta. Por favor, intenta de nuevo.';
+            messageElement.className = 'error';
+        }
     };
 
     script.onerror = function() {
         console.error('Error al cargar el script');
         document.body.removeChild(script);
         delete window[callback];
+        messageElement.textContent = 'Hubo un error al enviar la respuesta. Por favor, intenta de nuevo.';
+        messageElement.className = 'error';
     };
 
     const queryString = Object.keys(data)
@@ -46,20 +63,6 @@ function sendFormData(data) {
 
     script.src = `${SCRIPT_URL}?callback=${callback}&${queryString}`;
     document.body.appendChild(script);
-
-    // Reiniciar el formulario y mostrar mensaje de éxito después de 3 segundos
-    setTimeout(() => {
-        form.reset();
-        document.getElementById('char-count').textContent = '0 / 46';
-        messageElement.textContent = '¡Gracias por tu respuesta!';
-        messageElement.className = 'success';
-
-        // Ocultar el mensaje después de 5 segundos adicionales
-        setTimeout(() => {
-            messageElement.textContent = '';
-            messageElement.className = '';
-        }, 5000);
-    }, 3000);
 }
 
 // Event listener para el envío del formulario
