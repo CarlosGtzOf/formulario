@@ -2,7 +2,7 @@ const form = document.getElementById('weddingForm');
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxa4ssRgKUaUnRdQzrPEaBIPlJD-MJDbcT7rL-tDrPXaigKwzn7F800XxhigxKWQBSiJw/exec'; // Elimina el espacio al final de la URL
 
 // Función para configurar el contador de caracteres
-function setupCharacterCount() {
+/*function setupCharacterCount() {
     const messageTextarea = document.getElementById('message');
     const charCount = document.getElementById('char-count');
 
@@ -16,7 +16,7 @@ function setupCharacterCount() {
             charCount.style.color = '#666';
         }
     });
-}
+}*/
 
 // Función para enviar los datos del formulario
 function sendFormData(data) {
@@ -37,7 +37,7 @@ function sendFormData(data) {
 
         if (response && response.status === "success") {
             form.reset();
-            document.getElementById('char-count').textContent = '0 / 46';
+           // document.getElementById('char-count').textContent = '0 / 46';
             popupMessage.textContent = '¡Gracias por tu respuesta!';
 
             // Ocultar el popup después de 3 segundos
@@ -88,4 +88,4 @@ form.addEventListener('submit', function(e) {
 });
 
 // Llamar a setupCharacterCount cuando el DOM esté listo
-document.addEventListener('DOMContentLoaded', setupCharacterCount);
+//document.addEventListener('DOMContentLoaded', setupCharacterCount);
