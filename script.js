@@ -20,9 +20,12 @@ function setupCharacterCount() {
 
 // Función para enviar los datos del formulario
 function sendFormData(data) {
-    const messageElement = document.getElementById('response-message');
-    messageElement.textContent = 'Enviando tu respuesta...';
-    messageElement.className = 'info';
+    const overlay = document.getElementById('overlay');
+    const popupMessage = document.getElementById('popup-message');
+    
+    // Mostrar el popup
+    overlay.style.display = 'flex';
+    popupMessage.textContent = 'Enviando tu respuesta...';
 
     const script = document.createElement('script');
     const callback = 'callback_' + Math.random().toString(36).substr(2, 5);
@@ -35,17 +38,19 @@ function sendFormData(data) {
         if (response && response.status === "success") {
             form.reset();
             document.getElementById('char-count').textContent = '0 / 46';
-            messageElement.textContent = '¡Gracias por tu respuesta!';
-            messageElement.className = 'success';
+            popupMessage.textContent = '¡Gracias por tu respuesta!';
 
-            // Ocultar el mensaje después de 5 segundos
+            // Ocultar el popup después de 3 segundos
             setTimeout(() => {
-                messageElement.textContent = '';
-                messageElement.className = '';
-            }, 5000);
+                overlay.style.display = 'none';
+            }, 3000);
         } else {
-            messageElement.textContent = 'Hubo un error al procesar la respuesta. Por favor, intenta de nuevo.';
-            messageElement.className = 'error';
+            popupMessage.textContent = 'Hubo un error al procesar la respuesta. Por favor, intenta de nuevo.';
+            
+            // Ocultar el popup después de 3 segundos en caso de error
+            setTimeout(() => {
+                overlay.style.display = 'none';
+            }, 3000);
         }
     };
 
@@ -53,8 +58,12 @@ function sendFormData(data) {
         console.error('Error al cargar el script');
         document.body.removeChild(script);
         delete window[callback];
-        messageElement.textContent = 'Hubo un error al enviar la respuesta. Por favor, intenta de nuevo.';
-        messageElement.className = 'error';
+        popupMessage.textContent = 'Hubo un error al enviar la respuesta. Por favor, intenta de nuevo.';
+        
+        // Ocultar el popup después de 3 segundos en caso de error
+        setTimeout(() => {
+            overlay.style.display = 'none';
+        }, 3000);
     };
 
     const queryString = Object.keys(data)
